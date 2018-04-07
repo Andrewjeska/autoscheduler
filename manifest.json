@@ -1,9 +1,32 @@
 {
   "manifest_version": 2,
-  "name": "ScheduLit",
+  "name": "ScheduleLit",
   "description": "Optimize your schedule on Google Calendar",
+  "key": "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAp6egbfS+J5dZ4CWZoE3Uwt2rBqftDYiZCGcvIvMLBP+5mnKT7WMjcJpxpwN3isMmzkBZIXlboEmn4BZtZkE8OPPP7wn/J99zdkKSJZ4xXagVwvFDDznUsQ8fRC72eb3WtYaQbY3s5wCp/ynm3ZEtVAScHHzvXlPgs5jNREJQ94rNSn6GGVKjyd74z7BXC8Q5P+R6VVfmniUr2I3hOgE/UTVyBwMqKD+Zcn7lVcyfl2kPgYdk+hIxVuNNuEoJW+bN6vN5MxV4ncd3axNjmlP3xint9m9F0Wr2ytji7YhuqakuSg9LbaYs92jJemCow0FrgSObkc1PnI58cBc3vGEkcwIDAQAB",
   "version": "1.0",
   "browser_action": {
     "default_popup": "popup.html"
-  }
+  },
+  "permissions": [
+        "background",
+        "identity",
+        "notifications",
+        "storage",
+        "alarms",
+        "https://www.googleapis.com/*",
+        "https://*.googleusercontent.com/*"
+   ],
+
+    "background": {
+        "scripts": ["gCalFunctions.js"],
+        "persistent": false
+    },
+    "oauth2": {
+    "client_id": "979538021176-p4knecngflmn20mlfhj8gd13f59h2tvb.apps.googleusercontent.com",
+    "scopes": [
+      "https://www.googleapis.com/auth/calendar"
+    ]
+    },
+    "content_security_policy": "script-src 'self' https://apis.google.com; object-src 'self'"
+
 }

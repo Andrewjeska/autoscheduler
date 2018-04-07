@@ -1,88 +1,99 @@
-let CLIENT_ID = '979538021176-j6orr3438e1ntr1cnma4rtcjb11qbehp.apps.googleusercontent.com';
-
-let SCOPES = ["https://www.googleapis.com/auth/calendar"];
-
-/**
- * Check if current user has authorized this application.
- */
-function checkAuth() {
-  console.log("checkAuth()");
-  gapi.auth.authorize(
-    {
-      'client_id': CLIENT_ID,
-      'scope': SCOPES.join(' '),
-      'immediate': true
-    }, authResponseHandler);
-}
 
 
-function authResponseHandler(result){
-	if (authResult && !authResult.error) {
-    		console.log("AUTHORIZED");
 
-    		// remake the user's calendar
-    		newCalId = gapi.client.load('calendar', 'v3', createCalendar);
-    		console.log("newCalId: " + newCalId);
-
-  	} else {  // reauth requires
-    		console.log("NOT AUTHORIZED");
-  	}
+function getAuthToken(callback){
+    //options contains whether we promt the user (interactive) and a callback functions
+    chrome.identity.getAuthToken({ 'interactive': true }, callback);
 
 }
 
 //creates the user's calendar
 
-function createCalendar(name) {
+function createCalendar(name, token, callback) {
   console.log("In createCalendar()");
-  var request = gapi.client.calendar.calendars.insert({
-    'summary': name,
-    'timezone': 'America/New_York'
-  });
-  
-  console.log("All calendars: " + gapi.client.calendar.calendars);
 
-  request.execute(function(resp) {
-    console.log(resp);
-    newCalId = resp.id  // global scope to hack around nonaccessible return value
-    return(newCalId);   // return newly created GCal ID
-  });
+    // POST request to create a new calendar
+    var url = "https://www.googleapis.com/calendar/v3/calendars";
+    var params = {
+      "summary": name,
+      "timeZone": "America/New_York"
+    };
+    var xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
 
-  console.log("Executed request in createCalendar()");
+    //Send the proper header information along with the request
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            var newCalId = (JSON.parse(xhr.responseText).id);
+
+            callback(newCalId);
+
+          } else {
+            console.log("Error", xhr.statusText);
+          }
+        }
+    }
+
+    xhr.send(JSON.stringify(params));
+
 }
 
 // get user's already scheduled events from the calendar, from the next week
 
-function getPermanentEvents(){
+function getPermanentEvents(token, callback){
 
-    var currentTime = new Date();
+    var currentTime = new moment();
 
-    var request = gapi.client.calendar.events.list({
+    var url = "https://www.googleapis.com/calendar/v3/calendars/primary/events?";
+    url += "orderBy=startTime&";
+    url += "singleEvents=true&";
+    url += "timeMin=" + currentTime.toDate().toISOString() + "&";
+    url += "timeMax=" + currentTime.add(7, 'd').toDate().toISOString();
 
-        //assuming only the primary calendar, but in practice we want everything
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", url, true);
 
-        'calendarId': 'primary',
-        'timeMin': (currentTime).toISOString(),
-        'timeMax': moment(currentTime).add(7, 'd').toDate().toISOString(), 
-        'singleEvents': true,
-        'orderBy': 'startTime'
-    });
+    //Send the proper header information along with the request
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
 
-    request.execute(function(res) {
-        return(resp.items);
+    xhr.onreadystatechange = function() {
+        if (xhr.readyState == XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            var newCalId = (JSON.parse(xhr.responseText).id);
+            //pagecodediv.innerText = 'Importing your schedule...';
+            //document.querySelector('#import-button').remove();
+            //importEvents(newCalId, token, events);
+            console.log("getPermanentEvents returned: " + JSON.parse(xhr.response));
+            callback(xhr.response);
 
-    });
+          } else {
+            console.log("Error", xhr.statusText);
+            //pagecodediv.innerText = 'Uh Oh! Something went wrong...Sorry about the inconvenience! Feel free to shoot tchen112@terpmail.umd.edu an email so we know we\'re down!';
+            //document.querySelector('#import-button').remove();
+          }
+        }
+    }
 
-    console.log('retrieved permanent events');
-        
+    xhr.send();
+
 }
 
 
-function createEvents(calId, events) {
-   
+function createEvents(calId, token, events, callback) {
+
     //TODO: Figure out what data constitutes an event
-	
+    //TODO: schedule events in a batch?
+
     events.forEach(function(e){
-		
+
+        var url = "https://www.googleapis.com/calendar/v3/calendars/" + calId + "/events";
+
+
         var event = {
             'summary': e.name,
             'id': e.id,
@@ -95,24 +106,30 @@ function createEvents(calId, events) {
                 'timeZone': 'America/New_York'
             },
             'end': {
-                'dateTime': 'e.endTime',
+                'dateTime': e.endTime,
                 'timeZone': 'America/New_York'
             }
-      
+
         };
 
-            
-        var request = gapi.client.calendar.events.insert({
-            'calendarId': calId,
-            'resource': event
-        });
 
-            
-        request.execute(function(event) {
-            console.log("Inserted event with id: " + event.id);     
-        });
-	}	
+        var xhr = new XMLHttpRequest();
+         xhr.open("POST", url, true);
+
+         //Send the proper header information along with the request
+         xhr.setRequestHeader('Content-Type', 'application/json');
+         xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+
+
+         xhr.onreadystatechange = function() {
+             if (xhr.readyState == XMLHttpRequest.DONE && !postImportActionsCalled) {
+                 // console.log(JSON.parse(xhr.responseText));
+                 callback(xhr.response);
+             }
+         }
+
+         xhr.send(JSON.stringify(params));
+	});
 
 
 }
-

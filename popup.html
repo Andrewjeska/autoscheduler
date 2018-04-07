@@ -4,15 +4,10 @@
     <title>ScheduLit</title>
     <link rel="stylesheet" type="text/css" href="style.css" />
     <script src="moment.js"></script>
-    <script>
-        moment().format();
-    </script>
-    <script src="popup.js"></script>
     <script src="googleAnalytics.js"></script>
-    <!-- <script src="https://apis.google.com/js/client.js?onload=checkAuth"></script> -->
-    <script src="googleApiClient.js"></script> <!-- -->
     <script src="gCalFunctions.js"></script>
 
+    <script src="popup.js"></script>
     <!-- Compiled and minified CSS -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/css/materialize.min.css">
     <!-- Font Awesome -->
@@ -34,6 +29,11 @@
       </div>
     </div>
 
+    <button id="authorize-button" class"btn"> Authorize</button>
+    <button id="make-calendar" class"btn"> make calendar</button>
+
+
+
     <footer class="page-footer" style="padding-top: 2px; text-align: center; background-color:#26325A">
         <div class="container">
           <p class="grey-text text-lighten-4">
@@ -42,5 +42,7 @@
         </div>
         <div class="footer-copyright" style="height:10px; background-color:#26325A"></div>
     </footer>
+
+
   </body>
 </html>
