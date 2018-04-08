@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
     var nightTimeEnd = document.getElementById('sleepEnd');
     nightTimeEnd.onchange = setEndSleep;
 
-    document.getElementById("submitTasks").addEventListener("click", submitTaskList);
+    document.getElementById("submitTasks").addEventListener("click", getPermanentEventsPlusCallbackToSubmit);
 
     var d = moment.unix(1523992968).utc().toDate().toISOString();
     console.log(d);
@@ -98,7 +98,14 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
  }
 
- function submitTaskList(e){
+ function getPermanentEventsPlusCallbackToSubmit(e){
+     getAuthToken( (token) => {
+         //add a real callback function if you want to do something with the CalId
+         getPermanentEvents(token, submitTaskList)
+     });
+ }
+
+ function submitTaskList(permanentEvents){
      /*//first, create a calendar with the specified name
      console.log(document.getElementById("calendarName").value);
 
@@ -110,7 +117,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
      }*/
 
-
+     console.log(permanentEvents);
 
      //use chrome api to send an event to the Alex's data processing algo
 
@@ -130,12 +137,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
          "startSleep": startSleep,
          "endSleep": endSleep,
          "tasks":taskList,
-         "permanentEvents":[]
+         "permanentEvents":permanentEvents
 
      }
      console.log("submitTaskList")
 
-    //make a post request to something
     $.ajax({
         type: "POST",
         url: "http://localhost:5000/sendTasks",

@@ -390,9 +390,10 @@ def handler():
 
 
     for p in permaEvents:
+      print("due:"  + str(p["dueDate"]))
       st = (p["dueDate"] - since_epoch) / 60 // 30
       et = st + p["duration"]
-      obj2 = {st, et}
+      obj2 = [int(st), int(et)]
       perma_offsets.append(obj2)
 
 
@@ -423,8 +424,9 @@ def handler():
         schedule[interval] = Block(True, "mandatory", interval, 0)
 
     for obj in perma_offsets:
-      for interval in range(obj.st, obj.et):
-        schedule[interval] = Block(True, "mandatory", interval, 0)
+      for interval in range(obj[0], obj[1]):
+        if(interval < len(schedule)):
+            schedule[interval] = Block(True, "mandatory", interval, 0)
 
     print(schedule)
 

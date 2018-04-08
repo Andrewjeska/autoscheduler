@@ -76,7 +76,27 @@ function getPermanentEvents(token, callback){
             //document.querySelector('#import-button').remove();
             //importEvents(newCalId, token, events);
             console.log("getPermanentEvents returned: " + JSON.parse(xhr.response));
-            callback(xhr.response);
+            permaEvents = []
+            console.log(JSON.parse(xhr.responseText).items);
+
+            for(var i = 0; i < JSON.parse(xhr.responseText).items.length; i++){
+                var item = JSON.parse(xhr.responseText).items[i];
+                console.log(item);
+
+                var seconds = moment(item.end.dateTime).unix() - moment(item.start.dateTime).unix();
+                console.log(seconds);
+                var halfhours = Math.ceil(seconds / 60 / 30)
+
+                var event = {
+                    "taskName": item.summary,
+                    "dueDate": moment(item.start.dateTime).unix(), //unix time
+                    "duration": halfhours, //half hours
+                    "preference": 0
+                }
+                permaEvents.push(event);
+            }
+            console.log("perma: " + permaEvents);
+            callback(permaEvents);
 
           } else {
             console.log("Error", xhr.statusText);
