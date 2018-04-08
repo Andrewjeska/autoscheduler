@@ -38,7 +38,7 @@ function createCalendar(name) {
     'summary': name,
     'timezone': 'America/New_York'
   });
-  
+
   console.log("All calendars: " + gapi.client.calendar.calendars);
 
   request.execute(function(resp) {
@@ -62,7 +62,7 @@ function getPermanentEvents(){
 
         'calendarId': 'primary',
         'timeMin': (currentTime).toISOString(),
-        'timeMax': moment(currentTime).add(7, 'd').toDate().toISOString(), 
+        'timeMax': moment(currentTime).add(7, 'd').toDate().toISOString(),
         'singleEvents': true,
         'orderBy': 'startTime'
     });
@@ -73,16 +73,16 @@ function getPermanentEvents(){
     });
 
     console.log('retrieved permanent events');
-        
+
 }
 
 
 function createEvents(calId, events) {
-   
+
     //TODO: Figure out what data constitutes an event
-	
+
     events.forEach(function(e){
-		
+
         var event = {
             'summary': e.name,
             'id': e.id,
@@ -98,21 +98,20 @@ function createEvents(calId, events) {
                 'dateTime': 'e.endTime',
                 'timeZone': 'America/New_York'
             }
-      
+
         };
 
-            
+
         var request = gapi.client.calendar.events.insert({
             'calendarId': calId,
             'resource': event
         });
 
-            
+
         request.execute(function(event) {
-            console.log("Inserted event with id: " + event.id);     
+            console.log("Inserted event with id: " + event.id);
         });
-	}	
+	})	
 
 
 }
-
