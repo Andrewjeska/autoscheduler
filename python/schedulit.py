@@ -377,6 +377,25 @@ def handler():
     requestTasks = content['tasks'] #tasks from json
 
     tasks = []
+    permaEvents = content['permanentEvents'] #permanent events from json
+    stime = content['startSleep'] - since_epoch
+    etime = content['endSleep'] - since_epoch
+    stime = stime / 60 // 30
+    etime = etime / 60 // 30
+
+    perma_offsets = []
+    obj = {stime, etime}
+
+
+    for p in permaEvents:
+      st = (p["dueDate"] - since_epoch) / 60 // 30
+      et = st + p["duration"]
+      obj2 = {st, et}
+      perma_offsets.append(obj2)
+
+
+
+
     latest = 0
     for t in requestTasks:
       dd = t["dueDate"] - since_epoch
@@ -387,13 +406,28 @@ def handler():
       if dd > latest:
         latest = dd
 
-
-    print("latest")
+        print("latest")
     print(latest)
     latest = latest / 60 // 30
     print(latest)
 
     schedule = [0] * int(latest)
+
+    for days in range(len(schedule) // 48):
+      for interval in range(days * 48 + time, days * 48 + time + etime - stime):
+        schedule[interval] = Block(True, "mandatory", interval, 0)
+
+    for obj in perma_offsets:
+      for interval in range(obj.st, obj.et):
+        schedule[interval] = Block(True, "mandatory", interval, 0)
+
+
+
+
+
+
+
+
     start = start_state(tasks, schedule)
     #print_schedule(start.schedule)
     print(start)
