@@ -12,8 +12,8 @@ taskDetailsHTML += 'Preference (0-10): <input type="text" name="taskPreference" 
 taskDetailsHTML += '</form>'
 
 
-var startSleep = "Blah";
-var endSleep = "Blah";
+var startSleep = 0;
+var endSleep = 0;
 var taskList = [];
 var now;
 
@@ -136,7 +136,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
     $.ajax({
         type: "POST",
         url: "http://localhost:5000/sendTasks",
-        data: eventData
+        data: JSON.stringify(eventData),
+        contentType: "application/json; charset=utf-8",
+        dataType: "json",
     }).done(function( res ) {
 
         insertEvents(res)
@@ -149,6 +151,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
 
  function insertEvents(events){
+     console.log("insertEvents")
      getAuthToken( (token) => {
          //add a real callback function if you want to do something with the CalId
          createEvents('primary', token, events, (res) => {});

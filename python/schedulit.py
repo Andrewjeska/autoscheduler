@@ -16,7 +16,7 @@ def _siftdown(heap, startpos, pos):
             continue
         break
     heap[pos] = newitem
-    
+
 def _siftup(heap, pos):
     endpos = len(heap)
     startpos = pos
@@ -36,7 +36,7 @@ def _siftup(heap, pos):
     # to its final resting place (by sifting its parents down).
     heap[pos] = newitem
     _siftdown(heap, startpos, pos)
-    
+
 def heappush(heap, item):
     """Push item onto heap, maintaining the heap invariant."""
     heap.append(item)
@@ -87,10 +87,10 @@ class State:
   def __init__(self, tasks, schedule):
     self.tasks = tasks
     self.schedule = schedule
-    
+
   def __str__(self):
     return "Tasks: %s\nSchedule: %s" % (str(self.tasks), str(self.schedule))
-    
+
   def __repr__(self):
     return self.__str__()
 
@@ -101,7 +101,7 @@ class Task:
     self.name = name
     self.blocks = []
     self.preference = pref
-    
+
   def __repr__(self):
     return self.name +"\n" + str(self.blocks)
 
@@ -110,27 +110,27 @@ class Task:
 
 
 
-    
+
 class Block:
   def __init__(self, isMandatory, name, time, pref):
     self.isMandatory = isMandatory
     self.name = name
     self.time = time
     self.preference = pref
-    
-    
+
+
   def __str__(self):
     if self.isMandatory:
       return "mandator"
     else:
       return self.name + str(self.time)
-      
+
   def __repr__(self):
     if self.isMandatory:
       return "mandator"
     else:
       return self.name + str(self.time)
-    
+
 
 
 def start_state(tasks, schedule):
@@ -148,62 +148,62 @@ def start_state(tasks, schedule):
         schedule[(desired_time + block_part + shift) % len(schedule)] = block
         task.blocks.append(block)
       so_far += global_info.average
-  
+
   return State(tasks, schedule)
-      
-  
-  
+
+
+
 def swap(schedule, to, outof):
   blockfrom = schedule[outof]
   blockto = schedule[to]
   schedule[to] = blockfrom
   schedule[outof] = blockto
-  
+
   if blockfrom != 0:
     blockfrom.time = to
   if blockto != 0:
     blockto.time = outof
-  
+
 def isvalid(schedule, task, block, offset):
   if block.time + offset >= len(schedule) or block.time + offset < 0:
     return False
-  
+
   other = schedule[block.time + offset]
   if other == 0:
     return True
-  
 
-    
+
+
   if other.isMandatory:
     return False
-    
+
   if other.name == block.name:
     count = 0
     while other != 0 and other.name != block.name:
       other = schedule[block.time + offset]
-      offset += 1  
+      offset += 1
       count += 1
     if count > global_info.maximum:
       return False
-  
-  
+
+
   return True
-  
+
 def neighbors(state, offset=1):
   neighbor = []
   for task in state.tasks:
     for block in task.blocks:
       if isvalid(state.schedule, task, block, offset):
-        
+
         newstate = deepcopy(state)
         swap(newstate.schedule, block.time + offset, block.time)
         neighbor.append(newstate)
-        
+
       if isvalid(state.schedule, task, block, -offset):
         newstate = deepcopy(state)
         swap(newstate.schedule, block.time - offset, block.time)
         neighbor.append(newstate)
-        
+
   return neighbor
 
 def heuristic(state, switch = False):
@@ -217,16 +217,16 @@ def heuristic(state, switch = False):
       for block1, block2 in zip(order[:-1], order[1:]):
         variance += (block2.time - block1.time) ** 2 / len(state.schedule) ** 2
         worst += 1
-      
+
       variance2 += (order[-1].time - task.time) ** 2 / max(len(state.schedule) - task.time, task.time) ** 2
       score += variance / worst * .3 + variance2 / len(state.tasks) * .45
-    
+
     variance = 0
     worst = 0
     block_list = []
     cur_buf = []
     for entry in state.schedule:
-      
+
       if entry != 0 and not entry.isMandatory:
         if not cur_buf:
           cur_buf = [entry]
@@ -235,7 +235,7 @@ def heuristic(state, switch = False):
           cur_buf = [entry]
         else:
           cur_buf.append(entry)
-          
+
     # compactness and happiness
     worst1 = 0
     variance1 = 0
@@ -248,12 +248,12 @@ def heuristic(state, switch = False):
         offset = 100 - (group[ind + 1].preference - group[ind].preference) ** 2
         variance2 += offset / 10 ** 2
         worst2 += 1
-          
+
         if offset == 0:
           variance2 += 10
-        
+
     score += variance1 / worst1 * .15 + (1 - variance2 / worst2) * .1
-    
+
     return score
   else:
     variance = 0
@@ -263,8 +263,8 @@ def heuristic(state, switch = False):
       for block in task.blocks:
         variance += (block.time - target) ** 2
         worst += max(target, len(state.schedule) - target) ** 2
-    
-    
+
+
     return 1 - variance / worst
 
 
@@ -286,7 +286,7 @@ def heuristic(state, switch = False):
 ################################################################################################################
 import calendar
 import time
-since_epoch = calendar.timegm(time.gmtime()) 
+since_epoch = calendar.timegm(time.gmtime())
 def myformat(state):
   tasks = {}
   for task in state.tasks:
@@ -299,15 +299,15 @@ def myformat(state):
       if prev_time + 1 != block.time:
         if cur_block:
           groups.append(cur_block)
-        
+
         cur_block = []
-        
+
       prev_time = block.time
       cur_block.append(block.time)
-    
+
     if cur_block:
       groups.append(cur_block)
-    
+
     for group in groups:
       dates = {}
       fromtime = since_epoch + group[0] * 30 * 60
@@ -316,7 +316,7 @@ def myformat(state):
       dates["To"] = totime + 1
       tasks[task.name].append(dates)
   return tasks
-  
+
 
 def end_state_gen(heuristic):
   def end_state(state, count, prev):
@@ -333,7 +333,7 @@ def astar(start_state, neighbors, heuristic):
   seen_states = set()
   end_state = end_state_gen(heuristic)
   heap = [(1, start_state)]
-  
+
   cur_state = start_state
   count = [0]
   prev = [-1]
@@ -345,13 +345,13 @@ def astar(start_state, neighbors, heuristic):
     for n in neighbors(cur_state):
       if n in seen_states:
         continue
-      
+
       value = heuristic(n)
-      
+
       heappush(heap, (value, n))
-  
+
   return myformat(cur_state)
-    
+
 
 
 
@@ -362,38 +362,54 @@ def astar(start_state, neighbors, heuristic):
 ################################################################################################################
 import json
 from flask import Flask, request, jsonify
+from flask_cors import CORS
+
 app = Flask(__name__)
+CORS(app)
 
 tasks = []
 
 @app.route('/sendTasks', methods=['GET', 'POST'])
-def add_message(uuid):
+def handler():
+    print("hello friend")
     content = request.json
-    tasks = content['tasks'] 
+    print(content)
+    requestTasks = content['tasks'] #tasks from json
 
 
+    latest = 0
+    for t in requestTasks:
+      dd = t["dueDate"] - since_epoch
+      adjustedTask = Task(t["duration"], int(dd / 60 // 30) , t["taskName"], int(t["preference"]))
+      print("Due Date: " + str(dd))
+      tasks.append(adjustedTask)
+
+      if dd > latest:
+        latest = dd
 
 
-jason = 0
-with open('task.json') as json_data:
-  jason = json.load(json_data)
-  for entry in jason['tasks']:
-    tasks.append(entry)
+    print("latest")
+    print(latest)
+    latest = latest / 60 // 30
+    print(latest)
 
-latest = 0
-for t in tasks:
-  dd = t["dueDate"] - since_epoch
-  print("Due Date: " + str(dd))
-  if dd > latest:
-    latest = dd
+    schedule = [0] * int(latest)
+    start = start_state(tasks, schedule)
+    #print_schedule(start.schedule)
+    print(start)
+    result = astar(start, neighbors, heuristic)
+    #print_schedule(result.schedule)
+    print(result)
+    return jsonify(result)
+    #result is the scheduled events
 
-print(latest)
-latest = latest / 60 // 30
-print(latest)
 
-schedule = [0] * latest
-start = start_state(tasks, schedule)
-print_schedule(start.schedule)
-result = astar(start, neighbors, heuristic)
-print_schedule(result.schedule)
-print(result)
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+#jason = 0
+#with open('task.json') as json_data:
+#  jason = json.load(json_data)
+#  for entry in jason['tasks']:
+#    tasks.append(entry)

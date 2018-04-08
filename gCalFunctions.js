@@ -3,7 +3,8 @@
 
 function getAuthToken(callback){
     //options contains whether we promt the user (interactive) and a callback functions
-    chrome.identity.getAuthToken({}, function(token) {
+    chrome.identity.getAuthToken({ 'interactive': false}, function(token) {
+        console.log("auth");
         if(token == null){
             chrome.identity.getAuthToken({ 'interactive': true}, callback);
         } else {
@@ -97,11 +98,13 @@ function createEvents(calId = 'primary', token, events, callback) {
 
     Object.keys(events).forEach(function(key){
         e = events[key];
+        console.log(e);
+        console.log(moment.unix(e.From).toDate().toISOString());
 
         var url = "https://www.googleapis.com/calendar/v3/calendars/" + calId + "/events";
 
 
-        var event = {
+        var params = {
             'summary': e.taskName,
             'id': e.taskName,
 
@@ -109,11 +112,11 @@ function createEvents(calId = 'primary', token, events, callback) {
             //'description': e.preference,
 
             'start': {
-                'dateTime': e.From,
+                'dateTime': moment.unix(e.From).toDate().toISOString(),
                 'timeZone': 'America/New_York'
             },
             'end': {
-                'dateTime': e.To,
+                'dateTime': moment.unix(e.To).toDate().toISOString(),
                 'timeZone': 'America/New_York'
             }
 
@@ -129,7 +132,7 @@ function createEvents(calId = 'primary', token, events, callback) {
 
 
          xhr.onreadystatechange = function() {
-             if (xhr.readyState == XMLHttpRequest.DONE && !postImportActionsCalled) {
+             if (xhr.readyState == XMLHttpRequest.DONE) {
                  // console.log(JSON.parse(xhr.responseText));
                  callback(xhr.response);
              }
