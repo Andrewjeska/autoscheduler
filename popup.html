@@ -23,29 +23,44 @@
     </nav>
 
     <div class="container">
+
     <div id="descrip-div">
       <p class="center"><i>Optimize your life</i></p>
       <ul id="taskList"></ul>
+
+
     </div>
-      <div id="pagecodediv"></div>
+      <div id="pagecodediv">
+   </div>
       <div id="button-div" class="center" style="padding-top:10px;">
         <!-- <button id="add-button" hidden>Import Schedule</button> -->
-        <button id="ntask-button" class="btn" style="background-color:#595567"hidden>New task</button>
+        <a id="ntask-button" class="waves-effect waves-light btn" style="background-color:#595567"hidden>New task</a>
       </div>
     </div>
 
     <footer class="page-footer" style="padding-top: 2px; text-align: center; background-color:#26325A">
         <div class="container">
+            <h7 style=" color:white;">Global Settings</h1>
           <p class="grey-text text-lighten-4">
-            When I sleep:
+            <p style="text-align: left;  color:white;">
+                When do you sleep?
+            </p>
             <div style="text-align: left; color:white;">
-                Start: <input id="sleepStart" type="time" name="sleep">
+                From: <input id="sleepStart" type="time" name="sleep">
             </div>
             <div style="text-align: left; color:white;">
-                End: <input id="sleepEnd" type="time" name="sleep">
+                To: <input id="sleepEnd" type="time" name="sleep">
             </div>
+            <br />
 
           </p>
+          <p style="text-align: left;  color:white;">
+              What should we name this calendar?
+          </p>
+          <input type="text" name="calendarName" placeholder="Leave blank to add to primary calendar" id="calendarName">
+          <a id="submitTasks" class="waves-effect waves-light btn"  style="background-color:#595567;">ScheduLit!</a>
+
+
         </div>
         <div class="footer-copyright" style="height:10px; background-color:#26325A"></div>
     </footer>
