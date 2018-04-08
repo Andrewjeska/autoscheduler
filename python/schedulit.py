@@ -287,6 +287,7 @@ def heuristic(state, switch = False):
 import calendar
 import time
 since_epoch = calendar.timegm(time.gmtime())
+since_epoch -= since_epoch % (60 * 30)
 def myformat(state):
   tasks = {}
   for task in state.tasks:
@@ -340,6 +341,7 @@ def astar(start_state, neighbors, heuristic):
   while not end_state(cur_state, count, prev) and heap:
     temp = heappop(heap)
     value = temp[0]
+    #print("value: " + str(value))
     cur_state = temp[1]
     seen_states.add(tuple(cur_state.schedule))
     for n in neighbors(cur_state):
@@ -380,8 +382,8 @@ def handler():
     permaEvents = content['permanentEvents'] #permanent events from json
     stime = content['startSleep'] - since_epoch
     etime = content['endSleep'] - since_epoch
-    stime = stime / 60 // 30
-    etime = etime / 60 // 30
+    stime = int(stime / 60 // 30)
+    etime = int(etime / 60 // 30)
 
     perma_offsets = []
     obj = {stime, etime}
@@ -413,20 +415,23 @@ def handler():
 
     schedule = [0] * int(latest)
 
+    print("stime: " + str(stime));
+    print("etime: " + str(etime));
     for days in range(len(schedule) // 48):
-      for interval in range(days * 48 + time, days * 48 + time + etime - stime):
+      for interval in range(days * 48 + stime, min(len(schedule), days * 48 + etime)):
+        #print('hit')
         schedule[interval] = Block(True, "mandatory", interval, 0)
 
     for obj in perma_offsets:
       for interval in range(obj.st, obj.et):
         schedule[interval] = Block(True, "mandatory", interval, 0)
 
+    print(schedule)
 
 
 
 
-
-
+    print("about to start state")
 
     start = start_state(tasks, schedule)
     #print_schedule(start.schedule)

@@ -146,11 +146,9 @@ document.addEventListener("DOMContentLoaded", function(event) {
         //submit an array of tasks
         makeCalendar(document.getElementById("calendarName").value, function(calId){
             Object.keys(res).forEach(function(key){
-                insertEvents(res[key], calId);
+                insertEvents(res[key], calId, key);
             });
         })
-
-
 
     });
 
@@ -160,11 +158,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
  }
 
 
- function insertEvents(events, calId){
+ function insertEvents(events, calId, taskName){
      console.log("insertEvents")
      getAuthToken( (token) => {
          //add a real callback function if you want to do something with the CalId
-         createEvents(calId, token, events, (res) => {});
+         createEvents(calId, token, events, taskName, (res) => {});
      });
  }
   /*var newTaskButton = document.getElementById('ntask-button');

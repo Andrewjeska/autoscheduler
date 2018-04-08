@@ -91,11 +91,13 @@ function getPermanentEvents(token, callback){
 }
 
 //schedule events per task
-function createEvents(calId = 'primary', token, events, callback) {
+function createEvents(calId = 'primary', token, events, taskName, callback) {
 
     //TODO: Figure out what data constitutes an event
     //TODO: schedule events in a batch?
     console.log(calId);
+    console.log(taskName);
+
     events.forEach(function(e){
 
         console.log(e);
@@ -106,8 +108,9 @@ function createEvents(calId = 'primary', token, events, callback) {
 
 
         var params = {
-            'summary': e.taskName,
-            'id': e.taskName,
+            "summary": taskName,
+            "description":taskName,
+
 
             //using description for importance score
             //'description': e.preference,
