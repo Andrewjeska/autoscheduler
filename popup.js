@@ -4,10 +4,13 @@ var addButtonHTML = '<button id="add-button" class="btn" style="background-color
 var authenticateButtonHTML = '<button id="authenticate-button" class="btn" style="background-color:#595567; letter-spacing: 0px;">Allow Google Calendar Access</button>'
 
 // Input fields
-var taskDetailsHTML = 'Name: <input type="text" name="taskName"><br>'
-taskDetailsHTML += 'Due date: <input type="date" name="taskDueDate">'
-taskDetailsHTML += 'Hours needed: <input type="text" name="taskHours">'
-taskDetailsHTML += 'Preference (0-10): <input type="text" name="taskPreference">'
+var taskDetailsHTML = '<form id="input">'
+taskDetailsHTML += 'Task name: <input type="text" name="taskName" id="nameEntry"><br>'
+taskDetailsHTML += 'Due date: <input type="date" name="taskDueDate" id ="dueDateEntry">'
+taskDetailsHTML += 'Hours needed: <input type="text" name="taskHours" id="hoursEntry">'
+taskDetailsHTML += 'Preference (0-10): <input type="text" name="taskPreference" id="preferencEntry">'
+taskDetailsHTML += '</form>'
+
 
 var startSleep = "Blah";
 var endSleep = "Blah";
@@ -49,3 +52,47 @@ document.addEventListener("DOMContentLoaded", function(event) {
      console.log(e.target.value);
      endSleep = e.target.value;
  }
+
+  var newTaskButton = document.getElementById('ntask-button');
+  newTaskButton.addEventListener('click', function() {
+    pagecodediv.innerHTML = taskDetailsHTML;
+    document.querySelector('#button-div').innerHTML = addButtonHTML;
+    document.querySelector('#descrip-div').innerHTML = '<p class="center"><i>Enter task information below</i></p>';
+
+  }, false);
+ })
+
+ $(document).on('click', '#button-div', function(e) {
+   if(e.target) {
+     //convert form data to <li>
+     var taskname = document.getElementById("nameEntry");
+     var taskDueDate = document.getElementById("dueDateEntry"); //date object?
+     var hours = document.getElementById("hoursEntry");
+     var preference = document.getElementById("preferece");
+
+
+     //delete form
+     document.getElementById("input").remove();
+
+     var listElement = '<li><div style="border-style: solid;" >';
+     listElement += taskname + "<br>";
+     listElement += taskDueDate + "<br>";
+     listElement += hours + "<br>";
+     listElement += preference;
+
+     document.getElementById("taskList").appendChild(listElement);
+     //add an <li> to a list taskList
+     /*
+     <li>
+      <div>
+        // write out task details nicely
+      </div>
+    </li>
+
+    append to ul with id "taskList"
+
+     */
+
+   }
+
+ });
