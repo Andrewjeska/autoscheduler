@@ -90,16 +90,17 @@ function getPermanentEvents(token, callback){
 
 }
 
-
+//schedule events per task
 function createEvents(calId = 'primary', token, events, callback) {
 
     //TODO: Figure out what data constitutes an event
     //TODO: schedule events in a batch?
+    console.log(calId);
+    events.forEach(function(e){
 
-    Object.keys(events).forEach(function(key){
-        e = events[key];
         console.log(e);
-        console.log(moment.unix(e.From).toDate().toISOString());
+        console.log(moment.unix(e.From).utc().toISOString());
+        console.log(moment.unix(e.To).utc().toISOString());
 
         var url = "https://www.googleapis.com/calendar/v3/calendars/" + calId + "/events";
 
@@ -112,11 +113,11 @@ function createEvents(calId = 'primary', token, events, callback) {
             //'description': e.preference,
 
             'start': {
-                'dateTime': moment.unix(e.From).toDate().toISOString(),
+                'dateTime': moment.unix(e.From).utc().toDate().toISOString(),
                 'timeZone': 'America/New_York'
             },
             'end': {
-                'dateTime': moment.unix(e.To).toDate().toISOString(),
+                'dateTime': moment.unix(e.To).utc().toDate().toISOString(),
                 'timeZone': 'America/New_York'
             }
 

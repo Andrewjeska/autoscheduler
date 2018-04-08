@@ -32,13 +32,16 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
     document.getElementById("submitTasks").addEventListener("click", submitTaskList);
 
+    var d = moment.unix(1523992968).utc().toDate().toISOString();
+    console.log(d);
+
  })
 
  //before making an API call, you have to call getAuthToken, and put your api call in the callback
  function makeCalendar(name, callback){
      getAuthToken( (token) => {
          //add a real callback function if you want to do something with the CalId
-         createCalendar(name, token, (res) => {});
+         createCalendar(name, token, callback);
      });
  }
 
@@ -140,8 +143,15 @@ document.addEventListener("DOMContentLoaded", function(event) {
         contentType: "application/json; charset=utf-8",
         dataType: "json",
     }).done(function( res ) {
+        //submit an array of tasks
+        makeCalendar(document.getElementById("calendarName").value, function(calId){
+            Object.keys(res).forEach(function(key){
+                insertEvents(res[key], calId);
+            });
+        })
 
-        insertEvents(res)
+
+
     });
 
     //on the call back, do insertEvents
@@ -150,11 +160,11 @@ document.addEventListener("DOMContentLoaded", function(event) {
  }
 
 
- function insertEvents(events){
+ function insertEvents(events, calId){
      console.log("insertEvents")
      getAuthToken( (token) => {
          //add a real callback function if you want to do something with the CalId
-         createEvents('primary', token, events, (res) => {});
+         createEvents(calId, token, events, (res) => {});
      });
  }
   /*var newTaskButton = document.getElementById('ntask-button');

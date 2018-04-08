@@ -376,7 +376,7 @@ def handler():
     print(content)
     requestTasks = content['tasks'] #tasks from json
 
-
+    tasks = []
     latest = 0
     for t in requestTasks:
       dd = t["dueDate"] - since_epoch
@@ -400,6 +400,7 @@ def handler():
     result = astar(start, neighbors, heuristic)
     #print_schedule(result.schedule)
     print(result)
+
     return jsonify(result)
     #result is the scheduled events
 
