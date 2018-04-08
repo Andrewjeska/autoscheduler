@@ -3,8 +3,14 @@
 
 function getAuthToken(callback){
     //options contains whether we promt the user (interactive) and a callback functions
-    chrome.identity.getAuthToken({ 'interactive': true }, callback);
+    chrome.identity.getAuthToken({}, function(token) {
+        if(token == null){
+            chrome.identity.getAuthToken({ 'interactive': true}, callback);
+        } else {
+            callback(token)
+        }
 
+    });
 }
 
 //creates the user's calendar
@@ -84,7 +90,7 @@ function getPermanentEvents(token, callback){
 }
 
 
-function createEvents(calId, token, events, callback) {
+function createEvents(calId = 'primary', token, events, callback) {
 
     //TODO: Figure out what data constitutes an event
     //TODO: schedule events in a batch?
