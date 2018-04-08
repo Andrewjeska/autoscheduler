@@ -95,24 +95,25 @@ function createEvents(calId = 'primary', token, events, callback) {
     //TODO: Figure out what data constitutes an event
     //TODO: schedule events in a batch?
 
-    events.forEach(function(e){
+    Object.keys(events).forEach(function(key){
+        e = events[key];
 
         var url = "https://www.googleapis.com/calendar/v3/calendars/" + calId + "/events";
 
 
         var event = {
-            'summary': e.name,
-            'id': e.id,
+            'summary': e.taskName,
+            'id': e.taskName,
 
             //using description for importance score
-            'description': e.importance,
+            //'description': e.preference,
 
             'start': {
-                'dateTime': e.startTime,
+                'dateTime': e.From,
                 'timeZone': 'America/New_York'
             },
             'end': {
-                'dateTime': e.endTime,
+                'dateTime': e.To,
                 'timeZone': 'America/New_York'
             }
 

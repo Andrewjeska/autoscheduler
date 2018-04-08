@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
  })
 
  //before making an API call, you have to call getAuthToken, and put your api call in the callback
- function makeCalendar(name){
+ function makeCalendar(name, callback){
      getAuthToken( (token) => {
          //add a real callback function if you want to do something with the CalId
          createCalendar(name, token, (res) => {});
@@ -96,7 +96,7 @@ document.addEventListener("DOMContentLoaded", function(event) {
  }
 
  function submitTaskList(e){
-     //first, create a calendar with the specified name
+     /*//first, create a calendar with the specified name
      console.log(document.getElementById("calendarName").value);
 
      //comment out so it doesn't make a calendar for me
@@ -105,17 +105,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
          makeCalendar(document.getElementById("calendarName").value)
      } else {
 
-     }
+     }*/
 
 
 
      //use chrome api to send an event to the Alex's data processing algo
-     var eventData = {
-         "startSleep": startSleep,
-         "endSleep": endSleep,
-         "tasks":taskList
 
-     }
 
      /*
      Task Object:
@@ -128,17 +123,37 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
      */
 
+    var eventData = {
+         "startSleep": startSleep,
+         "endSleep": endSleep,
+         "tasks":taskList,
+         "permanentEvents":[]
 
+     }
+     console.log("submitTaskList")
 
+    //make a post request to something
+    $.ajax({
+        type: "POST",
+        url: "http://localhost:5000/sendTasks",
+        data: eventData
+    }).done(function( res ) {
+
+        insertEvents(res)
+    });
+
+    //on the call back, do insertEvents
 
 
  }
 
- function getScheduledEvents(){
-     chrome.runtime.sendMessage(eventData, someCallback);
 
+ function insertEvents(events){
+     getAuthToken( (token) => {
+         //add a real callback function if you want to do something with the CalId
+         createEvents('primary', token, events, (res) => {});
+     });
  }
-
   /*var newTaskButton = document.getElementById('ntask-button');
   newTaskButton.addEventListener('click', function() {
     pagecodediv.innerHTML = taskDetailsHTML;
