@@ -40,14 +40,38 @@ document.addEventListener("DOMContentLoaded", function(event) {
      });
  }
 
+ //So, Alex's A star algo needs the off-times to be the NEXT off-time, and it works based off of that
+ // once we know when the next off time it, it will infer the ones afterwards
+
  function setStartSleep(e){
-     console.log(e.target.value);
-     startSleep = e.target.value;
+     //the assumption is that you want to sleep at night
+     startTime = e.target.value;
+
+     hour = parseInt(startTime.split(":")[0]);
+     minutes = parseInt(startTime.split(":")[1]);
+
+     if(hour >= 12){
+         startSleep = moment().hour(hour).unix();
+     } else if(hour < 12){
+         startSleep = moment().add(1, 'd').hour(hour).unix();
+     }
+     console.log("start: " + startSleep);
+
  }
 
  function setEndSleep(e){
-     console.log(e.target.value);
-     endSleep = e.target.value;
+     endTime = e.target.value;
+
+     hour = parseInt(startTime.split(":")[0]);
+     minutes = parseInt(startTime.split(":")[1]);
+
+     if(hour >= 12){
+         endSleep = moment().hour(hour).unix();
+     } else if(hour < 12){
+         endSleep = moment().add(1, 'd').hour(hour).unix();
+     }
+     console.log("end: " + endSleep);
+
  }
 
  function removeTask(e){
@@ -75,6 +99,8 @@ document.addEventListener("DOMContentLoaded", function(event) {
      var calName = document.getElementById("calendarName").value;
      if(calName !== ""){
          makeCalendar(document.getElementById("calendarName").value)
+     } else {
+
      }
 
 
@@ -91,16 +117,21 @@ document.addEventListener("DOMContentLoaded", function(event) {
      Task Object:
          {
              "taskName": taskName,
-             "dueDate": taskDueDate,
-             "duration": hours,
+             "dueDate": taskDueDate, (epoch)
+             "duration": hours, (half hours)
              "preference": preference
          }
 
      */
 
-     //chrome.runtime.sendMessage(eventData, someCallback);
 
 
+
+
+ }
+
+ function getScheduledEvents(){
+     chrome.runtime.sendMessage(eventData, someCallback);
 
  }
 
@@ -150,10 +181,12 @@ document.addEventListener("DOMContentLoaded", function(event) {
      // add to task list
      taskList.push({
          "taskName": taskName,
-         "dueDate": taskDueDate,
-         "duration": hours,
+         "dueDate": moment(taskDueDate).unix(),
+         "duration": hours*2,
          "preference": preference
      });
+
+     console.log(taskList);
 
      // re adding event listener to icons...v bad style but eh
 
