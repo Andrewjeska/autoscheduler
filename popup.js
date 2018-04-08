@@ -15,12 +15,14 @@ taskDetailsHTML += '</form>'
 var startSleep = "Blah";
 var endSleep = "Blah";
 var taskList = [];
+var now;
 
 
 
 // Clicking "New task" button brings up input fields and "Add task" (submit) button
 document.addEventListener("DOMContentLoaded", function(event) {
     moment().format();
+    now = moment();
 
     var nightTimeStart = document.getElementById('sleepStart');
     nightTimeStart.onchange = setStartSleep;
@@ -45,30 +47,32 @@ document.addEventListener("DOMContentLoaded", function(event) {
 
  function setStartSleep(e){
      //the assumption is that you want to sleep at night
-     startTime = e.target.value;
+     var startTime = e.target.value;
+     console.log(startTime);
 
-     hour = parseInt(startTime.split(":")[0]);
-     minutes = parseInt(startTime.split(":")[1]);
-
+     var hour = parseInt(startTime.split(":")[0]);
+     var minutes = parseInt(startTime.split(":")[1]);
+     console.log(hour);
      if(hour >= 12){
-         startSleep = moment().hour(hour).unix();
+         startSleep = moment(now).hour(hour).unix();
      } else if(hour < 12){
-         startSleep = moment().add(1, 'd').hour(hour).unix();
+         startSleep = moment(now).add(1, 'd').hour(hour).unix();
      }
      console.log("start: " + startSleep);
 
  }
 
  function setEndSleep(e){
-     endTime = e.target.value;
+     var endTime = e.target.value;
+     console.log(endTime);
 
-     hour = parseInt(startTime.split(":")[0]);
-     minutes = parseInt(startTime.split(":")[1]);
-
+     var hour = parseInt(endTime.split(":")[0]);
+     var minutes = parseInt(endTime.split(":")[1]);
+     console.log(hour);
      if(hour >= 12){
-         endSleep = moment().hour(hour).unix();
+         endSleep = moment(now).hour(hour).unix();
      } else if(hour < 12){
-         endSleep = moment().add(1, 'd').hour(hour).unix();
+         endSleep = moment(now).add(1, 'd').hour(hour).unix();
      }
      console.log("end: " + endSleep);
 

@@ -1,0 +1,21 @@
+{
+    "startSleep":1523249034,
+    "endSleep":1523249034,
+    "tasks": [
+        {
+            "dueDate": 1524196800,
+            "duration":10,
+            "preference": 5,
+            "taskName":"Math"
+
+        },
+        {
+            "dueDate": 1524196800,
+            "duration":10,
+            "preference": 5,
+            "taskName":"CS"
+
+        }
+
+    ]
+}
